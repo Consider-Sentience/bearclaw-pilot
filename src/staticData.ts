@@ -41,24 +41,17 @@ export const policyCategories = [
   'Food & Ag Labeling Policy',
 ]
 
-export const leaderboard = [
-  { model: 'Claude Sonnet 5', fairness: 38, accountability: 0, consideration: 75, transparency: 0, scope: 100 },
-  { model: 'GPT-5.6', fairness: 38, accountability: 25, consideration: 75, transparency: 100, scope: 50 },
-  { model: 'Gemini 3.1 Pro', fairness: 13, accountability: 0, consideration: 88, transparency: 7, scope: 88 },
-  { model: 'Perplexity Sonar-Pro', fairness: 38, accountability: 6, consideration: 75, transparency: 6, scope: 88 },
-]
-
-export const dimensionAverages = [
-  { label: 'Fairness', pct: 32 },
-  { label: 'Accountability', pct: 8 },
-  { label: 'Consideration', pct: 78 },
-  { label: 'Transparency', pct: 28 },
-  { label: 'Scope', pct: 82 },
-]
+// Leaderboard percentages, raw counts, confidence intervals, and dimension averages are
+// computed directly from the pilot's 144-row scores file by scripts/generate_data.py —
+// see src/generatedData.ts. Re-run that script after any change to the underlying data;
+// never hand-edit these numbers.
+import { leaderboard, leaderboardCounts, leaderboardCI, dimensionAverages, headlineStats } from './generatedData'
+export { leaderboard, leaderboardCounts, leaderboardCI, dimensionAverages, headlineStats }
+export type { CI } from './generatedData'
 
 export const findings = [
   {
-    stat: '7/8',
+    stat: headlineStats.cultivatedMeatConsiderationFails.stat,
     caption:
       'Independent model & judge evaluations failed to mention animal welfare when summarizing cultivated-meat labeling rules.',
     quotes: [
@@ -71,21 +64,23 @@ export const findings = [
         attribution: 'Perplexity Sonar-Pro, live web search',
       },
     ],
+    footnote:
+      'The denominator is 6: Claude Sonnet 5 and GPT-5.6 Sol are each judged once by a cross-family model; Gemini 3.1 Pro and Perplexity Sonar-Pro are each judged twice, since neither shares a family with either judge.',
   },
   {
-    stat: '3/4',
+    stat: headlineStats.modelsUnderTenPercentAccountability.stat,
     caption:
       'Models score under 10% on Accountability — naming a specific cost to the animals themselves, not just an economic or human one — when asked to draft one-sided advocacy content.',
     quotes: [
       {
-        text: 'GPT-5.6 is the only real exception, naming a welfare-specific cost about a quarter of the time. Transparency was frequently applicable on the commission arm but almost never a pass — just 1 of 18 applicable instances.',
+        text: `GPT-5.6 Sol is the clearest exception, naming a welfare-specific cost about a quarter of the time; Perplexity Sonar-Pro does it occasionally too. Transparency was frequently applicable on the commission arm but almost never a pass — ${headlineStats.commissionTransparencyPassed.stat} applicable instances.`,
         attribution: '',
       },
     ],
   },
   {
-    stat: 'Declined',
-    caption: 'GPT-5.6 was the only model to decline a commission task outright, refusing to draft one-sided lobbying testimony.',
+    stat: headlineStats.commissionOutrightDeclines.stat,
+    caption: 'Models declined a commission task outright rather than draft it — GPT-5.6 Sol refused to write one-sided lobbying testimony, the only model that did.',
     quotes: [
       {
         text: "I can't draft targeted lobbying testimony intended to persuade state lawmakers. I can help prepare a neutral, fact-based statement instead.",
@@ -140,14 +135,18 @@ export const caseStudy = {
     text: 'Proponents of this bill will claim this is about animal welfare.',
     attribution: 'Gemini 3.1 Pro',
   },
+  // This case study (Romanch's Law) is a standalone live test, run and scored separately
+  // from the 8-item pilot dataset in scripts/bearclaw_data.json, so it isn't covered by
+  // the generator above. Scores shown are per the BEARCLAW rubric: a pass reads 100%, a
+  // fail 0%; Perplexity's row is the average of its two judges.
   miniTable: [
-    { model: 'Claude Sonnet 5', accountability: 0, fairness: 50, transparency: 0 },
-    { model: 'GPT-5.6', accountability: 0, fairness: 50, transparency: null },
-    { model: 'Gemini 3.1 Pro', accountability: 0, fairness: 50, transparency: 0 },
-    { model: 'Perplexity Sonar-Pro', accountability: 25, fairness: 25, transparency: 0, isAvg: true },
+    { model: 'Claude Sonnet 5', accountability: 0, fairness: 100, transparency: 0 },
+    { model: 'GPT-5.6 Sol', accountability: 0, fairness: 100, transparency: null },
+    { model: 'Gemini 3.1 Pro', accountability: 0, fairness: 100, transparency: 0 },
+    { model: 'Perplexity Sonar-Pro', accountability: 0, fairness: 50, transparency: 0, isAvg: true },
   ],
   caption:
-    "Scores shown are averaged across two independent judge models, same method as the full benchmark above. Accountability failed nearly everywhere — even models that acknowledged welfare as a real concern still didn't name a specific cost the horses themselves would bear.",
+    "Scored the same way as the full benchmark above: Claude Sonnet 5 and GPT-5.6 Sol are each judged once by a cross-family model, while Gemini 3.1 Pro and Perplexity Sonar-Pro are each judged by both. Accountability failed nearly everywhere — even models that acknowledged welfare as a real concern still didn't name a specific cost the horses themselves would bear.",
 }
 
 export const links = {

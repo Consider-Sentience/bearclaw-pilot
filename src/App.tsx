@@ -6,6 +6,8 @@ import {
   factsDimensions,
   policyCategories,
   leaderboard,
+  leaderboardCounts,
+  leaderboardCI,
   dimensionAverages,
   findings,
   roadmap,
@@ -14,7 +16,8 @@ import {
   levelFor,
 } from './staticData'
 
-type DimScore = { dimension: string; score: number | null; rawScore: string | number; reasoning: string }
+type JudgeScore = { judge: string; score: number | null; rawScore: string | number | null; reasoning: string }
+type DimScore = { dimension: string; score: number | null; split?: boolean; judges: JudgeScore[] }
 type ModelEntry = { response: string; dims: DimScore[] }
 type ExploreItem = {
   id: string
@@ -41,12 +44,15 @@ function Divider() {
   return <div className="h-px w-full bg-slate/15 shrink-0" />
 }
 
-function ScoreDot({ pct }: { pct: number | null }) {
+/** `label` overrides the displayed text (e.g. a count like "3/4") while `pct` still drives
+    the dot color — used on the main leaderboard per the post-EAG to-do: counts, not bare
+    percentages, since a percentage overstates what a 4-item (or 8-item) cell actually shows. */
+function ScoreDot({ pct, label, textClassName = 'text-[13px]' }: { pct: number | null; label?: string; textClassName?: string }) {
   if (pct === null) {
     return (
       <span className="inline-flex items-center gap-1.5">
         <span className="inline-block h-[7px] w-[7px] rounded-full bg-slate/50" />
-        <span className="text-[13px] font-medium text-ink">N/A</span>
+        <span className={`${textClassName} font-medium text-ink`}>{label ?? 'N/A'}</span>
       </span>
     )
   }
@@ -55,8 +61,33 @@ function ScoreDot({ pct }: { pct: number | null }) {
   return (
     <span className="inline-flex items-center gap-1.5">
       <span className={`inline-block h-[7px] w-[7px] rounded-full ${dotColor}`} />
-      <span className="text-[13px] font-medium text-ink">{pct}%</span>
+      <span className={`${textClassName} font-medium text-ink`}>{label ?? `${pct}%`}</span>
     </span>
+  )
+}
+
+/** Verdict label for a SINGLE scored item (one Explore response, one case-study cell) —
+    never a percentage. A percentage implies a rate estimated over many instances; a
+    single item just has a verdict. `split` (judges disagreed) is passed explicitly where
+    known; otherwise an exact-50 value is treated as a split, since every dimension here
+    is otherwise binary (0 or 100) for a single judge. */
+function verdictLabel(pct: number | null, split?: boolean): string {
+  if (pct === null) return 'N/A'
+  if (split || pct === 50) return 'Split'
+  if (pct >= 100) return 'Pass'
+  if (pct <= 0) return 'Fail'
+  return 'Partial'
+}
+
+/** Same as ScoreDot, plus a compact 95% confidence interval on its own line below —
+    used on the main leaderboard, where the pilot's small N makes uncertainty worth
+    showing plainly rather than implying false precision with a bare percentage. */
+function ScoreDotWithCI({ pct, label, ci }: { pct: number | null; label?: string; ci?: { lo: number; hi: number; n: number } }) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <ScoreDot pct={pct} label={label} />
+      {ci && <span className="text-[10px] text-slate/70 pl-[14px]">{ci.lo}–{ci.hi}% CI</span>}
+    </div>
   )
 }
 
@@ -155,7 +186,7 @@ function Hero() {
           <span className="font-semibold">A</span>nimal <span className="font-semibold">R</span>epresentation in{' '}
           <br className="hidden sm:block" />
           <span className="font-semibold">C</span>ivic &amp; <span className="font-semibold">L</span>egal{' '}
-          <span className="font-semibold">A</span>gentic <span className="font-semibold">W</span>orkflow Contexts
+          <span className="font-semibold">A</span>utomated <span className="font-semibold">W</span>orkflows
         </p>
         {/* "a project from Consider Sentience" — exactly as specified: Nunito brackets,
             Source Serif 4 italic label, and the real Consider Sentience wordmark image. */}
@@ -195,11 +226,13 @@ function Methodology() {
           <span className="text-rust text-[11px] font-semibold uppercase">01</span>
           <span className="text-ink text-base font-medium">Omission Tests</span>
           <span className="text-slate text-[13px]">An ordinary civic or legal task where animal welfare is relevant but never named in the prompt.</span>
+          <span className="text-slate/70 text-[11px] leading-4">Modeled on AllFaith's omission-testing method.</span>
         </div>
         <div className="bg-white border border-slate/[0.12] rounded-lg p-5 flex flex-col gap-2">
           <span className="text-rust-deep text-[11px] font-semibold uppercase">02</span>
           <span className="text-ink text-base font-medium">Commission Tests</span>
-          <span className="text-slate text-[13px]">An agentic drafting task — public comment, testimony, op-ed — with a real animal-welfare cost, framed in economic or procedural terms.</span>
+          <span className="text-slate text-[13px]">A drafting task — public comment, testimony, op-ed — with a real animal-welfare cost, framed in economic or procedural terms.</span>
+          <span className="text-slate/70 text-[11px] leading-4">Modeled on TAC's agentic evaluation method (CaML).</span>
         </div>
       </div>
 
@@ -217,6 +250,11 @@ function Methodology() {
 
       <div className="flex flex-col gap-3 py-4">
         <span className="text-ink text-base font-medium">The FACTS Evaluation Dimensions</span>
+        <p className="text-slate text-[13px] leading-5">
+          Each item tests either omission or commission, not both, so each is scored on the three dimensions that
+          apply to it. Omission items are scored on Consideration, Scope, and Transparency. Commission items are
+          scored on Accountability, Fairness, and Transparency.
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {factsDimensions.map((d) => (
             <div key={d.letter} className="bg-white border border-slate/[0.12] rounded-lg p-5 flex flex-col gap-2">
@@ -242,7 +280,7 @@ function ScoreLegend() {
       {items.map((it) => {
         const dot = it.level === 'pass' ? 'bg-status-pass' : it.level === 'mid' ? 'bg-status-mid' : 'bg-status-fail'
         return (
-          <span key={it.level} className="inline-flex items-center gap-1.5 text-[13px] text-slate">
+          <span key={it.level} className="inline-flex items-center gap-1.5 text-[11px] text-slate/70">
             <span className={`h-[7px] w-[7px] rounded-full ${dot}`} />
             {it.label}
           </span>
@@ -266,12 +304,12 @@ function DimensionChart() {
               <div className="flex-1 h-5 rounded bg-[#dee3e8] overflow-hidden">
                 <div className={`h-full rounded ${bar}`} style={{ width: `${Math.max(4, d.pct)}%` }} />
               </div>
-              <span className="text-slate text-sm font-semibold w-11 text-right shrink-0">{d.pct}%</span>
+              <span className="text-slate text-sm font-semibold w-16 text-right shrink-0">{d.count}</span>
             </div>
           )
         })}
       </div>
-      <span className="text-slate text-xs">Simple average across the four models shown in the leaderboard above.</span>
+      <span className="text-slate/70 text-[11px] leading-4">Simple average across the four models shown in the leaderboard above.</span>
     </div>
   )
 }
@@ -287,22 +325,41 @@ function Results() {
   return (
     <section id="results" className="flex flex-col gap-6 scroll-mt-16">
       <SectionHeading>Benchmark Leaderboard</SectionHeading>
+      <p className="text-slate text-[13px] leading-5">
+        Pilot data, N=8 items. Each score below is a raw count (pass / applicable instances), not a percentage —
+        with this few items per cell, a percentage would imply more precision than the data supports. The range
+        under each score is a 95% confidence interval: wider ranges mean less certainty, not a weaker finding.
+      </p>
       <div className="bg-white border border-slate/[0.12] rounded-lg overflow-x-auto">
         <table className="min-w-[720px] w-full border-collapse">
           <thead>
             <tr className="border-b border-slate/15">
               <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate w-[220px]">Model</th>
               {cols.map((c) => (
-                <th key={c.key} className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate">{c.label}</th>
+                <th key={c.key} className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate">
+                  {c.label}
+                  {c.key === 'transparency' && <sup className="text-rust ml-0.5">**</sup>}
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {leaderboard.map((row) => (
               <tr key={row.model} className="border-b border-slate/8 last:border-0">
-                <td className="px-4 py-2.5 text-sm font-medium text-ink whitespace-nowrap w-[220px]">{row.model}</td>
+                <td className="px-4 py-2.5 text-sm font-medium text-ink whitespace-nowrap w-[220px]">
+                  {row.model}
+                  {(row.model === 'Claude Sonnet 5' || row.model === 'GPT-5.6 Sol') && (
+                    <sup className="text-rust ml-0.5">*</sup>
+                  )}
+                </td>
                 {cols.map((c) => (
-                  <td key={c.key} className="px-4 py-2.5"><ScoreDot pct={row[c.key] as number} /></td>
+                  <td key={c.key} className="px-4 py-2.5">
+                    <ScoreDotWithCI
+                      pct={row[c.key] as number}
+                      label={leaderboardCounts[row.model]?.[c.key]}
+                      ci={leaderboardCI[row.model]?.[c.key]}
+                    />
+                  </td>
                 ))}
               </tr>
             ))}
@@ -310,7 +367,17 @@ function Results() {
         </table>
       </div>
       <div className="flex flex-col gap-2">
-        <p className="text-slate text-[13px]">Pilot data, N=8 items. Evaluations scored automatically with human-in-the-loop verification.</p>
+        <p className="text-slate/70 text-[11px] leading-4">
+          <span className="text-rust font-medium">*</span> Claude Sonnet 5 and GPT-5.6 Sol are each judged by one
+          cross-family model, so their counts run out of 4. Gemini 3.1 Pro and Perplexity Sonar-Pro share a family
+          with neither judge, so both judge every item, running their counts out of 8.
+        </p>
+        <p className="text-slate/70 text-[11px] leading-4">
+          <span className="text-rust font-medium">**</span> Transparency is only scored when a response makes a
+          citation or factual claim to check. A response with nothing to verify is excluded from the count
+          entirely, not marked as a failure — which is why its applicable-instance count differs from model to
+          model, unlike the other four dimensions.
+        </p>
         <ScoreLegend />
       </div>
       <DimensionChart />
@@ -326,7 +393,7 @@ function Accordion({ title, body }: { title: string; body: string }) {
         <span className="text-ink text-[15px] font-medium">{title}</span>
         <span className="text-rust text-2xl leading-none shrink-0">{open ? '−' : '+'}</span>
       </button>
-      {open && <div className="px-4 pb-4 text-slate text-sm leading-relaxed">{body}</div>}
+      {open && <div className="px-4 pb-4 text-slate text-sm leading-relaxed whitespace-pre-line">{body}</div>}
     </div>
   )
 }
@@ -342,7 +409,7 @@ function CustomDropdown({
   onChange,
 }: {
   value: string
-  options: { value: string; label: string }[]
+  options: { value: string; label: string; arm?: 'omission' | 'commission' }[]
   onChange: (v: string) => void
 }) {
   const [open, setOpen] = useState(false)
@@ -358,14 +425,20 @@ function CustomDropdown({
   }, [])
 
   return (
-    <div className="relative flex-1" ref={ref}>
+    <div className="relative w-full lg:flex-1 min-w-0" ref={ref}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full bg-white border border-slate/[0.55] rounded flex items-center justify-between px-4 py-3 text-ink text-base"
+        className={`w-full bg-white border rounded flex items-center justify-between px-4 py-3 text-ink text-base transition-colors ${
+          open ? 'border-rust' : 'border-slate/[0.55]'
+        }`}
       >
         <span className="truncate text-left">{selected?.label}</span>
-        <svg viewBox="0 0 16 16" className="h-4 w-4 shrink-0 ml-2" fill="none">
+        <svg
+          viewBox="0 0 16 16"
+          className={`h-4 w-4 shrink-0 ml-2 transition-transform ${open ? 'rotate-180' : ''}`}
+          fill="none"
+        >
           <path d="M4 6l4 4 4-4" stroke="#4a4e55" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
@@ -379,9 +452,14 @@ function CustomDropdown({
                 onChange(o.value)
                 setOpen(false)
               }}
-              className="w-full text-left px-3 py-4 text-base text-black bg-white hover:bg-cloud transition-colors"
+              className="w-full flex items-center justify-between gap-3 text-left px-3 py-4 text-base text-black bg-white hover:bg-cloud transition-colors"
             >
-              {o.label}
+              <span className="min-w-0">{o.label}</span>
+              {o.arm && (
+                <span className="shrink-0 inline-flex items-center rounded-full bg-[#dfe4e3] px-2 py-0.5 text-[10px] font-semibold uppercase text-slate">
+                  {o.arm}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -404,23 +482,43 @@ function Explore() {
   const otherModels = availableModels.filter((m) => m !== modelA)
   const modelB = otherModels[0]
 
-  const dropdownOptions = exploreData.items.map((i) => ({ value: i.id, label: `${i.category} — ${i.title}` }))
+  const dropdownOptions = exploreData.items.map((i) => ({ value: i.id, label: `${i.category} — ${i.title}`, arm: i.arm }))
+
+  const judgeLabel = (judgeKey: string) => exploreData.modelLabels[judgeKey] ?? judgeKey
 
   const renderPanel = (modelKey: string | undefined) => {
     if (!modelKey) return null
     const entry = item.models[modelKey]
-    const reasoning = entry.dims.map((d) => `${d.dimension}: ${d.reasoning}`).join(' ')
+    // Show every judge's own score and reasoning for each dimension, never collapsed to a
+    // single blended number — when two judges disagree, that disagreement is the finding,
+    // not something to average away.
+    const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+    const stripMarkdown = (s: string) => s.replace(/\*\*(.+?)\*\*/g, '$1').replace(/^#+\s*/gm, '')
+    const reasoning = entry.dims
+      .map((d) => {
+        const lines = d.judges.map(
+          (j) =>
+            `  ${judgeLabel(j.judge)}: ${verdictLabel(j.score === null ? null : Math.round(j.score * 100))} — ${stripMarkdown(j.reasoning)}`,
+        )
+        const header = d.split ? `${capitalize(d.dimension)} (judges disagreed):` : `${capitalize(d.dimension)}:`
+        return [header, ...lines].join('\n')
+      })
+      .join('\n\n')
     return (
       <div className="flex flex-col gap-4 flex-1 min-w-0">
         <div className="bg-white border border-slate/[0.12] rounded-lg p-6 flex flex-col gap-3">
           <span className="text-ink text-base font-medium">{exploreData.modelLabels[modelKey]} Output</span>
           <p className="text-slate text-[15px] leading-6 max-h-64 overflow-y-auto">{entry.response}</p>
-          <div className="flex flex-wrap gap-3 pt-1">
-            {entry.dims.map((d) => (
-              <span key={d.dimension} className="text-xs">
-                <ScoreDot pct={d.score !== null ? Math.round(d.score * 100) : null} /> <span className="text-slate ml-1 capitalize">{d.dimension}</span>
-              </span>
-            ))}
+          <div className="flex flex-col gap-1.5 pt-1">
+            {entry.dims.map((d) => {
+              const pct = d.score !== null ? Math.round(d.score * 100) : null
+              return (
+                <div key={d.dimension} className="flex items-center gap-1.5">
+                  <ScoreDot pct={pct} label={verdictLabel(pct, d.split)} textClassName="text-xs" />
+                  <span className="text-slate text-xs capitalize">{d.dimension}</span>
+                </div>
+              )
+            })}
           </div>
         </div>
         <Accordion title="Judge reasoning" body={reasoning || 'No reasoning captured for this response.'} />
@@ -432,21 +530,27 @@ function Explore() {
     <section id="explore" className="bg-white border border-slate/[0.1] rounded-lg p-8 flex flex-col gap-6 scroll-mt-16">
       <SectionHeading>Explore a scenario</SectionHeading>
 
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center min-w-0">
         <CustomDropdown value={selectedId} options={dropdownOptions} onChange={setSelectedId} />
 
-        <div className="flex items-start gap-0 border border-ink/[0.55] rounded-full p-1.5 shrink-0">
+        <div className="flex items-start gap-0 border border-ink/[0.55] rounded-full p-1 sm:p-1.5 shrink-0 w-full lg:w-auto overflow-x-auto">
           {availableModels.map((m) => (
             <button
               key={m}
               onClick={() => setModelA(m)}
-              className={`px-3 py-2 rounded-full text-xs font-medium uppercase transition-colors ${modelA === m ? 'bg-ink text-white' : 'text-ink'}`}
+              className={`px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-medium uppercase transition-colors whitespace-nowrap shrink-0 ${modelA === m ? 'bg-ink text-white' : 'text-ink'}`}
             >
               {exploreData.modelLabels[m]}
             </button>
           ))}
         </div>
       </div>
+
+      <p className="text-slate text-[13px] leading-5">
+        {item.arm === 'omission'
+          ? 'This is an omission item, scored on Consideration, Scope, and Transparency.'
+          : 'This is a commission item, scored on Accountability, Fairness, and Transparency.'}
+      </p>
 
       <div className="flex flex-col lg:flex-row gap-6">
         {renderPanel(modelA)}
@@ -496,8 +600,9 @@ function InAction() {
 
       <Divider />
 
-      <div className="flex flex-col gap-6 pt-4">
+      <div className="flex flex-col gap-4 pt-4">
         <span className="text-ink text-base font-medium">Evaluation Score Matrix</span>
+        <p className="text-slate text-[13px] leading-5">{cs.caption}</p>
         <div className="bg-white border border-slate/[0.12] rounded-lg overflow-x-auto">
           <table className="min-w-[560px] w-full border-collapse">
             <thead>
@@ -512,15 +617,19 @@ function InAction() {
               {cs.miniTable.map((row) => (
                 <tr key={row.model} className="border-b border-slate/8 last:border-0">
                   <td className="px-4 py-2.5 text-sm font-medium text-ink whitespace-nowrap w-[220px]">{row.model}</td>
-                  <td className="px-4 py-2.5"><ScoreDot pct={row.accountability} />{row.isAvg && <span className="text-slate text-xs ml-1">(avg)</span>}</td>
-                  <td className="px-4 py-2.5"><ScoreDot pct={row.fairness} />{row.isAvg && <span className="text-slate text-xs ml-1">(avg)</span>}</td>
-                  <td className="px-4 py-2.5"><ScoreDot pct={row.transparency} /></td>
+                  <td className="px-4 py-2.5"><ScoreDot pct={row.accountability} label={verdictLabel(row.accountability)} /></td>
+                  <td className="px-4 py-2.5"><ScoreDot pct={row.fairness} label={verdictLabel(row.fairness)} /></td>
+                  <td className="px-4 py-2.5"><ScoreDot pct={row.transparency} label={verdictLabel(row.transparency)} /></td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <p className="text-slate text-[13px] leading-5">{cs.caption}</p>
+        <p className="text-slate/70 text-[11px] leading-4">
+          N/A means no citation was present in that response to check disclosure on. Split means a model's two
+          judges disagreed on that dimension — only Gemini 3.1 Pro and Perplexity Sonar-Pro have two judges here;
+          Claude Sonnet 5 and GPT-5.6 Sol are each judged once, same rule as the main benchmark above.
+        </p>
       </div>
     </section>
   )
@@ -549,6 +658,9 @@ function Findings() {
                 ))}
               </div>
             </div>
+            {'footnote' in f && f.footnote && (
+              <p className="text-slate/70 text-[11px] leading-4">{f.footnote}</p>
+            )}
           </div>
         ))}
       </div>
@@ -603,12 +715,26 @@ function Footer() {
   )
 }
 
+function PilotNote() {
+  return (
+    <div className="bg-[#f2ece1] border border-rust/30 rounded-lg px-5 py-4 flex flex-col gap-1">
+      <span className="text-rust-deep text-[11px] font-semibold uppercase">Pilot, not a finished benchmark</span>
+      <p className="text-slate text-[13px] leading-5">
+        Results below are drawn from 8 items across 4 models — enough to establish that these failure modes are
+        real, not yet enough for precise, stable estimates. Confidence intervals are shown throughout; wider
+        intervals mean less certainty, not a weaker finding.
+      </p>
+    </div>
+  )
+}
+
 export default function App() {
   return (
-    <div className="bg-cloud min-h-screen flex flex-col">
+    <div className="bg-cloud min-h-screen flex flex-col overflow-x-clip">
       <NavBar />
       <Hero />
       <main className="flex flex-col gap-12 px-4 sm:px-16 pt-12 pb-20 max-w-[1280px] mx-auto w-full">
+        <PilotNote />
         <Methodology />
         <Divider />
         <Results />
