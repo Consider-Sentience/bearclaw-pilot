@@ -123,6 +123,20 @@ function Logo({ size }: { size: number }) {
   )
 }
 
+/** "[ return to site ]" — default and hover states from the Consider Sentience site pattern. */
+function ReturnToSite() {
+  const br = { fontFamily: "'Nunito', sans-serif", fontSize: 20, lineHeight: 1 } as const
+  return (
+    <a href={links.considerSentience} className="group relative inline-flex items-center gap-[5px] self-start ml-3 text-slate">
+      <span aria-hidden="true" className="absolute -left-[10px] top-1/2 -translate-y-1/2 size-[4px] rounded-full bg-rust/70 opacity-0 group-hover:opacity-100" />
+      <span style={br} className="font-extralight group-hover:font-light group-hover:text-rust/70">[</span>
+      <span className="text-sm leading-[21px] group-hover:font-medium group-hover:italic group-hover:font-['Source_Serif_4']">return to site</span>
+      <span style={br} className="font-extralight group-hover:font-light group-hover:text-rust/70">]</span>
+      <span aria-hidden="true" className="absolute -right-[11px] top-1/2 -translate-y-1/2 size-[6px] rounded-full bg-rust/70 opacity-0 group-hover:opacity-100" />
+    </a>
+  )
+}
+
 function NavBar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const active = useScrollSpy(NAV_SECTIONS.map((s) => s.id))
@@ -135,10 +149,12 @@ function NavBar() {
   return (
     <nav className="sticky top-0 z-40 border-b border-slate/10 bg-cloud/95 backdrop-blur px-4 sm:px-8 py-4">
       <div className="flex items-center justify-between">
-        <button onClick={() => scrollTo('overview')} className="flex items-center gap-0.5 shrink-0">
-          <Logo size={40} />
-          <span className="font-semibold text-ink text-base uppercase">BEARCLAW</span>
-        </button>
+        <div className="flex flex-col gap-2 shrink-0">
+          <a href={links.considerSentience} aria-label="Consider Sentience" className="block">
+            <img src={considerSentienceWordmark} alt="Consider Sentience" style={{ height: 28, width: 'auto' }} />
+          </a>
+          <ReturnToSite />
+        </div>
 
         <div className="hidden md:flex items-start gap-8">
           {NAV_SECTIONS.map((s) => (
