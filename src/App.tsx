@@ -699,10 +699,12 @@ function NextSteps() {
 
 function DataCodeCTA() {
   return (
-    <div className="bg-ink rounded-lg p-8 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-center sm:text-left">
+    <div className="bg-ink rounded-lg p-8 flex flex-col items-center justify-center gap-4 text-center">
       <span className="text-white text-base font-medium">Explore the full dataset and evaluation harness:</span>
-      <a href={links.dataset} target="_blank" rel="noreferrer" className="text-rust hover:text-rust-deep text-[15px] font-medium transition-colors">Hugging Face Dataset ↗</a>
-      <a href={links.code} target="_blank" rel="noreferrer" className="text-rust hover:text-rust-deep text-[15px] font-medium transition-colors">GitHub Repository ↗</a>
+      <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
+        <a href={links.dataset} target="_blank" rel="noreferrer" className="text-rust hover:text-rust-deep text-[15px] font-medium transition-colors">Hugging Face Dataset ↗</a>
+        <a href={links.code} target="_blank" rel="noreferrer" className="text-rust hover:text-rust-deep text-[15px] font-medium transition-colors">GitHub Repository ↗</a>
+      </div>
     </div>
   )
 }
