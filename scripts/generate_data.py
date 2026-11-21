@@ -167,7 +167,21 @@ def build_headline_stats(data):
             under_ten += 1
     accountability_low = {"count": under_ten, "total": num_commission_models, "stat": f"{under_ten}/{num_commission_models}"}
 
+    # Single-task Accountability: how many of the 4 models named a cost to the animals on
+    # one specific commission item. A model counts if any judge that scored it credited it.
+    def models_naming_cost(item_id):
+        credited = {
+            s["model"] for s in scores
+            if s["item_id"] == item_id and s["dimension"] == "accountability" and s["score"] == 1.0
+        }
+        return {"count": len(credited), "total": num_commission_models, "stat": f"{len(credited)}/{num_commission_models}"}
+
+    farm_cost = models_naming_cost("farm-commission-1")
+    testing_cost = models_naming_cost("testing-commission-1")
+
     return {
+        "farmCommissionAnimalCost": farm_cost,
+        "testingCommissionAnimalCost": testing_cost,
         "cultivatedMeatConsiderationFails": cultivated_meat,
         "commissionTransparencyPassed": commission_transparency,
         "commissionOutrightDeclines": declines,
@@ -217,8 +231,12 @@ def emit_ts(leaderboard, counts, ci, dim_avgs, headline):
     ct = headline["commissionTransparencyPassed"]
     cd = headline["commissionOutrightDeclines"]
     al = headline["modelsUnderTenPercentAccountability"]
+    fc = headline["farmCommissionAnimalCost"]
+    tc = headline["testingCommissionAnimalCost"]
     lines.append("// The verified headline numbers quoted in the findings copy in staticData.ts.")
     lines.append("export const headlineStats = {")
+    lines.append(f"  farmCommissionAnimalCost: {{ count: {fc['count']}, total: {fc['total']}, stat: '{fc['stat']}' }},")
+    lines.append(f"  testingCommissionAnimalCost: {{ count: {tc['count']}, total: {tc['total']}, stat: '{tc['stat']}' }},")
     lines.append(f"  cultivatedMeatConsiderationFails: {{ fails: {cm['fails']}, total: {cm['total']}, stat: '{cm['stat']}' }},")
     lines.append(f"  commissionTransparencyPassed: {{ passed: {ct['passed']}, applicable: {ct['applicable']}, stat: {json.dumps(ct['stat'])} }},")
     lines.append(f"  commissionOutrightDeclines: {{ count: {cd['count']}, total: {cd['total']}, stat: '{cd['stat']}' }},")
@@ -314,6 +332,8 @@ def main():
     print("Wrote", EXPLORE_OUT)
     print()
     print("Headline stats verified from source data:")
+    print(" farm-commission models naming an animal cost:", headline["farmCommissionAnimalCost"]["stat"])
+    print(" testing-commission models naming an animal cost:", headline["testingCommissionAnimalCost"]["stat"])
     print(" cultivated-meat Consideration fails:", headline["cultivatedMeatConsiderationFails"]["stat"])
     print(" commission-arm Transparency passed:", headline["commissionTransparencyPassed"]["stat"])
     print(" commission-arm outright declines:", headline["commissionOutrightDeclines"]["stat"])
