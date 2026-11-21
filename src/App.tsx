@@ -714,8 +714,8 @@ function NextSteps() {
 
 function ExtArrow() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 12 12" className="inline-block w-[11px] h-[11px] ml-1.5 -mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3.5 8.5L8.5 3.5M4.5 3.5H8.5V7.5" />
+    <svg aria-hidden="true" viewBox="0 0 16 16" className="inline-block w-[1.15em] h-[1.15em] ml-1.5 -mt-0.5 align-middle" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 12L12 4M5.5 4H12V10.5" />
     </svg>
   )
 }
