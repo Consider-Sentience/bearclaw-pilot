@@ -146,7 +146,7 @@ function NavBar() {
   }
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-slate/10 bg-cloud/95 backdrop-blur px-4 sm:px-8 py-4">
+    <nav className="sticky top-0 z-40 border-b border-slate/10 bg-cloud px-4 sm:px-8 py-4">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2 shrink-0">
           <a href={links.considerSentience} aria-label="Consider Sentience" className="block">
@@ -255,7 +255,7 @@ function Methodology() {
         <span className="text-ink text-base font-medium">Policy Categories Tested</span>
         <div className="flex flex-wrap gap-3">
           {policyCategories.map((c) => (
-            <span key={c} className="inline-flex items-center gap-1.5 rounded-full bg-[#dfe4e3] px-2.5 py-1 text-[11px] font-semibold uppercase text-slate">
+            <span key={c} className="inline-flex items-center gap-1.5 rounded-full bg-sage-tint px-2.5 py-1 text-[11px] font-semibold uppercase text-slate">
               <span className="h-1.5 w-1.5 rounded-full bg-slate/60" />
               {c}
             </span>
@@ -316,7 +316,7 @@ function DimensionChart() {
           return (
             <div key={d.label} className="flex items-center gap-4">
               <span className="text-ink text-sm font-medium w-[120px] shrink-0">{d.label}</span>
-              <div className="flex-1 h-5 rounded bg-[#dee3e8] overflow-hidden">
+              <div className="flex-1 h-5 rounded bg-then-tint overflow-hidden">
                 <div className={`h-full rounded ${bar}`} style={{ width: `${Math.max(4, d.pct)}%` }} />
               </div>
               <span className="text-slate text-sm font-semibold w-16 text-right shrink-0">{d.count}</span>
@@ -471,7 +471,7 @@ function CustomDropdown({
             >
               <span className="min-w-0">{o.label}</span>
               {o.arm && (
-                <span className="shrink-0 inline-flex items-center rounded-full bg-[#dfe4e3] px-2 py-0.5 text-[10px] font-semibold uppercase text-slate">
+                <span className="shrink-0 inline-flex items-center rounded-full bg-sage-tint px-2 py-0.5 text-[10px] font-semibold uppercase text-slate">
                   {o.arm}
                 </span>
               )}
@@ -685,9 +685,9 @@ function Findings() {
 
 function NextSteps() {
   const badgeStyle = {
-    done: 'bg-[#dfe4e3] text-status-pass',
-    next: 'bg-[#e9e0da] text-rust',
-    then: 'bg-[#e3e5e8] text-slate',
+    done: 'bg-sage-tint text-status-pass',
+    next: 'bg-next-tint text-rust',
+    then: 'bg-then-tint text-slate',
   }
   return (
     <section id="next-steps" className="flex flex-col gap-6 scroll-mt-16">
@@ -742,7 +742,7 @@ function Footer() {
 
 function PilotNote() {
   return (
-    <div className="bg-[#f2ece1] border border-rust/30 rounded-lg px-5 py-4 flex flex-col gap-1">
+    <div className="bg-sand border border-rust/30 rounded-lg px-5 py-4 flex flex-col gap-1">
       <span className="text-rust-deep text-[11px] font-semibold uppercase">Pilot, not a finished benchmark</span>
       <p className="text-slate text-[13px] leading-5">
         Results below are drawn from 8 items across 4 models — enough to establish that these failure modes are
