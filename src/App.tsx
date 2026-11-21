@@ -697,12 +697,22 @@ function NextSteps() {
   )
 }
 
+function ExtArrow() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 12 12" className="inline-block w-[11px] h-[11px] ml-1.5 -mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3.5 8.5L8.5 3.5M4.5 3.5H8.5V7.5" />
+    </svg>
+  )
+}
+
 function DataCodeCTA() {
   return (
-    <div className="bg-ink rounded-lg p-8 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-center sm:text-left">
+    <div className="bg-ink rounded-lg p-8 flex flex-col items-center justify-center gap-4 text-center">
       <span className="text-white text-base font-medium">Explore the full dataset and evaluation harness:</span>
-      <a href={links.dataset} target="_blank" rel="noreferrer" className="text-rust hover:text-rust-deep text-[15px] font-medium transition-colors">Hugging Face Dataset ↗</a>
-      <a href={links.code} target="_blank" rel="noreferrer" className="text-rust hover:text-rust-deep text-[15px] font-medium transition-colors">GitHub Repository ↗</a>
+      <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
+        <a href={links.dataset} target="_blank" rel="noreferrer" className="text-rust hover:text-rust-deep text-[15px] font-medium transition-colors">Hugging Face Dataset<ExtArrow /></a>
+        <a href={links.code} target="_blank" rel="noreferrer" className="text-rust hover:text-rust-deep text-[15px] font-medium transition-colors">GitHub Repository<ExtArrow /></a>
+      </div>
     </div>
   )
 }
