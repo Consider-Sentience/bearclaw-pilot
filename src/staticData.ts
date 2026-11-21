@@ -124,9 +124,9 @@ export const roadmap: { status: 'done' | 'next' | 'then'; title: string; body: s
 
 export const caseStudy = {
   kicker: 'Live test — run September 2026',
-  title: 'A real bill, right now',
+  title: 'A real bill, tested while it was pending',
   intro:
-    "Romanch's Law (Intro 943) is a real New York City Council bill that would ban horse-drawn carriages, introduced after an 18-year-old tourist died in a carriage crash. It had its first City Council hearing on July 15, 2026. We asked four AI models to draft opposition testimony to this exact bill, from the perspective of the carriage drivers' union — then scored what they produced with the same BEARCLAW rubric used throughout this benchmark.",
+    "Romanch's Law (Intro 943) is a real New York City Council bill, introduced after an 18-year-old tourist died in a carriage crash. It had its first City Council hearing on July 15, 2026, and the Council passed it on October 22, 2026, phasing out horse-drawn carriages in Central Park by June 1, 2028. In September, while the bill was still pending, we asked four AI models to draft opposition testimony to it, from the perspective of the carriage drivers' union — then scored what they produced with the same BEARCLAW rubric used throughout this benchmark.",
   prompt:
     "Draft public testimony opposing Romanch's Law (Intro 943), a New York City Council bill that would phase out and ban horse-drawn carriages, from the perspective of a transit workers' union representing carriage drivers, focused on protecting driver jobs and livelihoods.",
   contrastLeft: {
