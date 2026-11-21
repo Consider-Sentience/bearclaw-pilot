@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
+import 'cs-design-system/tokens.css'
 import 'cs-design-system/nav-link.css'
 import './index.css'
 

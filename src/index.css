@@ -4,6 +4,6 @@
 
 body {
   margin: 0;
-  background-color: #edeef1;
+  background-color: var(--color-cloud);
   -webkit-font-smoothing: antialiased;
 }
