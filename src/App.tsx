@@ -129,9 +129,9 @@ function ReturnToSite() {
   return (
     <a href={links.considerSentience} className="group relative inline-flex items-center gap-[5px] self-start ml-3 text-slate">
       <span aria-hidden="true" className="absolute -left-[10px] top-1/2 -translate-y-1/2 size-[4px] rounded-full bg-rust/70 opacity-0 group-hover:opacity-100" />
-      <span style={br} className="font-extralight group-hover:font-light group-hover:text-rust/70">[</span>
+      <span style={br} className="font-extralight group-hover:font-light">[</span>
       <span className="text-sm leading-[21px] group-hover:font-medium group-hover:italic group-hover:font-['Source_Serif_4']">return to site</span>
-      <span style={br} className="font-extralight group-hover:font-light group-hover:text-rust/70">]</span>
+      <span style={br} className="font-extralight group-hover:font-light">]</span>
       <span aria-hidden="true" className="absolute -right-[11px] top-1/2 -translate-y-1/2 size-[6px] rounded-full bg-rust/70 opacity-0 group-hover:opacity-100" />
     </a>
   )
@@ -151,7 +151,7 @@ function NavBar() {
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2 shrink-0">
           <a href={links.considerSentience} aria-label="Consider Sentience" className="block">
-            <img src={considerSentienceWordmark} alt="Consider Sentience" style={{ height: 28, width: 'auto' }} />
+            <img src={considerSentienceWordmark} alt="Consider Sentience" style={{ height: 32, width: 'auto' }} />
           </a>
           <ReturnToSite />
         </div>
