@@ -123,16 +123,15 @@ function Logo({ size }: { size: number }) {
   )
 }
 
-/** "[ return to site ]" — default and hover states from the Consider Sentience site pattern. */
+/** "[ return to site ]" using the shared nav-link component (cs-design-system/nav-link.css). */
 function ReturnToSite() {
-  const br = { fontFamily: "'Nunito', sans-serif", fontSize: 20, lineHeight: 1 } as const
   return (
-    <a href={links.considerSentience} className="group relative inline-flex items-center gap-[5px] self-start ml-3 text-slate">
-      <span aria-hidden="true" className="absolute -left-[10px] top-1/2 -translate-y-1/2 size-[4px] rounded-full bg-rust/70 opacity-0 group-hover:opacity-100" />
-      <span style={br} className="font-extralight group-hover:font-light">[</span>
-      <span className="text-sm leading-[21px] group-hover:font-medium group-hover:italic group-hover:font-['Source_Serif_4']">return to site</span>
-      <span style={br} className="font-extralight group-hover:font-light">]</span>
-      <span aria-hidden="true" className="absolute -right-[11px] top-1/2 -translate-y-1/2 size-[6px] rounded-full bg-rust/70 opacity-0 group-hover:opacity-100" />
+    <a href={links.considerSentience} className="cs-nav-link self-start">
+      <span className="cs-nav-link__dot cs-nav-link__dot--left" aria-hidden="true" />
+      <span className="cs-nav-link__bracket">[</span>
+      <span className="cs-nav-link__label">return to site</span>
+      <span className="cs-nav-link__bracket">]</span>
+      <span className="cs-nav-link__dot cs-nav-link__dot--right" aria-hidden="true" />
     </a>
   )
 }
