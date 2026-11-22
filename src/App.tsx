@@ -444,7 +444,7 @@ function CustomDropdown({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`w-full bg-white border rounded-lg flex items-center justify-between px-4 py-3 text-ink text-base transition-colors ${
+        className={`w-full bg-white border rounded flex items-center justify-between px-4 py-3 text-ink text-base transition-colors ${
           open ? 'border-rust' : 'border-slate/[0.55]'
         }`}
       >
@@ -458,7 +458,7 @@ function CustomDropdown({
         </svg>
       </button>
       {open && (
-        <div className="absolute z-30 mt-1 w-full bg-white rounded-lg overflow-hidden shadow-[0_0_24px_rgba(0,0,0,0.2)] max-h-80 overflow-y-auto">
+        <div className="absolute z-30 mt-1 w-full bg-white rounded overflow-hidden shadow-[0_0_24px_rgba(0,0,0,0.2)] max-h-80 overflow-y-auto">
           {options.map((o) => (
             <button
               key={o.value}
