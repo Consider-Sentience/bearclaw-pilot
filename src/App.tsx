@@ -86,7 +86,7 @@ function ScoreDotWithCI({ pct, label, ci }: { pct: number | null; label?: string
   return (
     <div className="flex flex-col gap-0.5">
       <ScoreDot pct={pct} label={label} />
-      {ci && <span className="text-[10px] text-slate/70 pl-[14px]">{ci.lo}–{ci.hi}% CI</span>}
+      {ci && <span className="text-[11px] text-slate/70 pl-[14px]">{ci.lo}–{ci.hi}% CI</span>}
     </div>
   )
 }
@@ -471,7 +471,7 @@ function CustomDropdown({
             >
               <span className="min-w-0">{o.label}</span>
               {o.arm && (
-                <span className="shrink-0 inline-flex items-center rounded-full bg-sage-tint px-2 py-0.5 text-[10px] font-semibold uppercase text-slate">
+                <span className="shrink-0 inline-flex items-center rounded-full bg-sage-tint px-2 py-0.5 text-[11px] font-semibold uppercase text-slate">
                   {o.arm}
                 </span>
               )}
