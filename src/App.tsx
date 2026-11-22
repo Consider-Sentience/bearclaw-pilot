@@ -191,15 +191,15 @@ function NavBar() {
 
 function Hero() {
   return (
-    <header id="overview" className="bg-cloud px-6 sm:px-16 lg:px-[256px] py-20 flex flex-col items-center gap-6 scroll-mt-16">
+    <header id="overview" className="bg-cloud px-6 sm:px-16 lg:px-[256px] pt-20 pb-8 flex flex-col items-center gap-6 scroll-mt-16">
       <div className="flex flex-col items-center gap-4">
         <div className="flex flex-col items-center">
           <div className="mb-0">
             <Logo size={100} />
           </div>
-          <h1 className="font-semibold text-ink text-[56px] leading-[64px] uppercase text-center">BEARCLAW</h1>
+          <h1 className="font-semibold text-ink text-[40px] leading-[48px] sm:text-[56px] sm:leading-[64px] uppercase text-center">BEARCLAW</h1>
         </div>
-        <p className="text-slate text-[22px] leading-[28px] text-center w-full sm:w-[600px]">
+        <p className="text-slate text-[16px] leading-[20px] sm:text-[22px] sm:leading-[28px] text-center w-full sm:w-[600px]">
           A <span className="font-semibold">B</span>enchmark for <span className="font-semibold">E</span>valuating{' '}
           <span className="font-semibold">A</span>nimal <span className="font-semibold">R</span>epresentation in{' '}
           <br className="hidden sm:block" />
@@ -409,7 +409,10 @@ function Accordion({ title, body }: { title: string; body: string }) {
     <div className="bg-slate/[0.06] rounded-lg overflow-hidden">
       <button onClick={() => setOpen((v) => !v)} className="flex items-center justify-between w-full px-4 py-3 text-left gap-3">
         <span className="text-ink text-[15px] font-medium">{title}</span>
-        <span className="text-rust text-2xl leading-none shrink-0">{open ? '−' : '+'}</span>
+        <svg className="text-rust shrink-0" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M2 8H14" stroke="currentColor" strokeWidth="1.5" />
+          {!open && <path d="M8 2V14" stroke="currentColor" strokeWidth="1.5" />}
+        </svg>
       </button>
       {open && <div className="px-4 pb-4 text-slate text-sm leading-relaxed whitespace-pre-line">{body}</div>}
     </div>
@@ -761,7 +764,7 @@ export default function App() {
     <div className="bg-cloud min-h-screen flex flex-col overflow-x-clip">
       <NavBar />
       <Hero />
-      <main className="flex flex-col gap-12 px-4 sm:px-16 pt-12 pb-20 max-w-[1280px] mx-auto w-full">
+      <main className="flex flex-col gap-12 px-4 sm:px-16 pt-8 pb-20 max-w-[1280px] mx-auto w-full">
         <PilotNote />
         <Methodology />
         <Divider />
