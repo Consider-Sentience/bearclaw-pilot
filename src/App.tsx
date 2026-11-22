@@ -174,10 +174,13 @@ function NavBar() {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden mt-3 pb-2 flex flex-col gap-1 border-t border-slate/10 pt-3">
+        <div className="md:hidden mt-3 pb-2 flex flex-col items-start gap-3 border-t border-slate/10 pt-4">
           {NAV_SECTIONS.map((s) => (
-            <button key={s.id} onClick={() => scrollTo(s.id)} className={`text-left px-2 py-2.5 rounded text-sm ${active === s.id ? 'text-ink font-medium bg-white' : 'text-slate'}`}>
-              {s.label}
+            <button key={s.id} onClick={() => scrollTo(s.id)} className="flex flex-col items-start gap-1 group">
+              <span className={`text-sm ${active === s.id ? 'text-ink font-medium' : 'text-slate font-normal group-hover:text-ink'} transition-colors`}>
+                {s.label}
+              </span>
+              <span className={`h-[2px] w-full rounded-full transition-colors ${active === s.id ? 'bg-rust' : 'bg-transparent'}`} />
             </button>
           ))}
         </div>
