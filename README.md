@@ -7,7 +7,7 @@ Interactive results site for **BEARCLAW**, a pilot benchmark testing whether AI 
 | | |
 |---|---|
 | Dataset | [considersentience/bearclaw-benchmark](https://huggingface.co/datasets/considersentience/bearclaw-benchmark) on Hugging Face |
-| Evaluation harness | [lish-stack/bearclaw](https://github.com/lish-stack/bearclaw) (Inspect AI tasks, scorers, rubrics) |
+| Evaluation harness | [Consider-Sentience/bearclaw](https://github.com/Consider-Sentience/bearclaw) (Inspect AI tasks, scorers, rubrics) |
 
 This is a pilot: 8 items, 4 models, 2 judges. Results are exploratory, and the site shows raw counts and 95% confidence intervals rather than percentages.
 

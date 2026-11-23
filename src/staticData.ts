@@ -155,6 +155,6 @@ export const caseStudy = {
 
 export const links = {
   dataset: 'https://huggingface.co/datasets/considersentience/bearclaw-benchmark',
-  code: 'https://github.com/lish-stack/bearclaw',
+  code: 'https://github.com/Consider-Sentience/bearclaw',
   considerSentience: 'https://considersentience.ai',
 }
