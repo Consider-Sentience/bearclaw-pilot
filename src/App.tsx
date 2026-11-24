@@ -352,7 +352,7 @@ function Results() {
         <table className="min-w-[720px] w-full border-collapse">
           <thead>
             <tr className="border-b border-slate/15">
-              <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate w-[220px]">Model</th>
+              <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate">Model</th>
               {cols.map((c) => (
                 <th key={c.key} className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate">
                   {c.label}
@@ -625,10 +625,10 @@ function InAction() {
         <span className="text-ink text-base font-medium">Evaluation Score Matrix</span>
         <p className="text-slate text-[13px] leading-5">{cs.caption}</p>
         <div className="bg-white border border-slate/[0.12] rounded-lg overflow-x-auto">
-          <table className="min-w-[560px] w-full border-collapse">
+          <table className="min-w-[760px] w-full table-fixed border-collapse">
             <thead>
               <tr className="border-b border-slate/15">
-                <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate w-[220px]">Model</th>
+                <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate">Model</th>
                 <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate">Accountability</th>
                 <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate">Fairness</th>
                 <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate">Transparency</th>
@@ -637,7 +637,7 @@ function InAction() {
             <tbody>
               {cs.miniTable.map((row) => (
                 <tr key={row.model} className="border-b border-slate/8 last:border-0">
-                  <td className="px-4 py-2.5 text-sm font-medium text-ink whitespace-nowrap w-[220px]">{row.model}</td>
+                  <td className="px-4 py-2.5 text-sm font-medium text-ink">{row.model}</td>
                   <td className="px-4 py-2.5"><ScoreDot pct={row.accountability} label={verdictLabel(row.accountability)} /></td>
                   <td className="px-4 py-2.5"><ScoreDot pct={row.fairness} label={verdictLabel(row.fairness)} /></td>
                   <td className="px-4 py-2.5"><ScoreDot pct={row.transparency} label={verdictLabel(row.transparency)} /></td>
