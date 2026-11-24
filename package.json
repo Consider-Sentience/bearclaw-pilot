@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "cs-design-system": "github:lish-stack/cs-design-system",
+    "cs-design-system": "github:Consider-Sentience/cs-design-system",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

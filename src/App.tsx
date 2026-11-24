@@ -86,7 +86,7 @@ function ScoreDotWithCI({ pct, label, ci }: { pct: number | null; label?: string
   return (
     <div className="flex flex-col gap-0.5">
       <ScoreDot pct={pct} label={label} />
-      {ci && <span className="text-[10px] text-slate/70 pl-[14px]">{ci.lo}–{ci.hi}% CI</span>}
+      {ci && <span className="text-[11px] text-slate/70 pl-[14px]">{ci.lo}–{ci.hi}% CI</span>}
     </div>
   )
 }
@@ -123,6 +123,19 @@ function Logo({ size }: { size: number }) {
   )
 }
 
+/** "[ return to site ]" using the shared nav-link component (cs-design-system/nav-link.css). */
+function ReturnToSite() {
+  return (
+    <a href={links.considerSentience} className="cs-nav-link self-start">
+      <span className="cs-nav-link__dot cs-nav-link__dot--left" aria-hidden="true" />
+      <span className="cs-nav-link__bracket">[</span>
+      <span className="cs-nav-link__label">return to site</span>
+      <span className="cs-nav-link__bracket">]</span>
+      <span className="cs-nav-link__dot cs-nav-link__dot--right" aria-hidden="true" />
+    </a>
+  )
+}
+
 function NavBar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const active = useScrollSpy(NAV_SECTIONS.map((s) => s.id))
@@ -133,12 +146,14 @@ function NavBar() {
   }
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-slate/10 bg-cloud/95 backdrop-blur px-4 sm:px-8 py-4">
+    <nav className="sticky top-0 z-40 border-b border-slate/10 bg-cloud px-4 sm:px-8 py-4">
       <div className="flex items-center justify-between">
-        <button onClick={() => scrollTo('overview')} className="flex items-center gap-0.5 shrink-0">
-          <Logo size={40} />
-          <span className="font-semibold text-ink text-base uppercase">BEARCLAW</span>
-        </button>
+        <div className="flex flex-col gap-2 shrink-0">
+          <a href={links.considerSentience} aria-label="Consider Sentience" className="block">
+            <img src={considerSentienceWordmark} alt="Consider Sentience" style={{ height: 32, width: 'auto' }} />
+          </a>
+          <ReturnToSite />
+        </div>
 
         <div className="hidden md:flex items-start gap-8">
           {NAV_SECTIONS.map((s) => (
@@ -159,10 +174,13 @@ function NavBar() {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden mt-3 pb-2 flex flex-col gap-1 border-t border-slate/10 pt-3">
+        <div className="md:hidden mt-3 pb-2 flex flex-col items-start gap-3 border-t border-slate/10 pt-4">
           {NAV_SECTIONS.map((s) => (
-            <button key={s.id} onClick={() => scrollTo(s.id)} className={`text-left px-2 py-2.5 rounded text-sm ${active === s.id ? 'text-ink font-medium bg-white' : 'text-slate'}`}>
-              {s.label}
+            <button key={s.id} onClick={() => scrollTo(s.id)} className="flex flex-col items-start gap-1 group">
+              <span className={`text-sm ${active === s.id ? 'text-ink font-medium' : 'text-slate font-normal group-hover:text-ink'} transition-colors`}>
+                {s.label}
+              </span>
+              <span className={`h-[2px] w-full rounded-full transition-colors ${active === s.id ? 'bg-rust' : 'bg-transparent'}`} />
             </button>
           ))}
         </div>
@@ -173,15 +191,15 @@ function NavBar() {
 
 function Hero() {
   return (
-    <header id="overview" className="bg-cloud px-6 sm:px-16 lg:px-[256px] py-20 flex flex-col items-center gap-6 scroll-mt-16">
+    <header id="overview" className="bg-cloud px-6 sm:px-16 lg:px-[256px] pt-20 pb-8 flex flex-col items-center gap-6 scroll-mt-16">
       <div className="flex flex-col items-center gap-4">
         <div className="flex flex-col items-center">
           <div className="mb-0">
             <Logo size={100} />
           </div>
-          <h1 className="font-semibold text-ink text-[56px] leading-[64px] uppercase text-center">BEARCLAW</h1>
+          <h1 className="font-semibold text-ink text-[40px] leading-[48px] sm:text-[56px] sm:leading-[64px] uppercase text-center">BEARCLAW</h1>
         </div>
-        <p className="text-slate text-[22px] leading-[28px] text-center w-full sm:w-[600px]">
+        <p className="text-slate text-[16px] leading-[20px] sm:text-[22px] sm:leading-[28px] text-center w-full sm:w-[600px]">
           A <span className="font-semibold">B</span>enchmark for <span className="font-semibold">E</span>valuating{' '}
           <span className="font-semibold">A</span>nimal <span className="font-semibold">R</span>epresentation in{' '}
           <br className="hidden sm:block" />
@@ -240,7 +258,7 @@ function Methodology() {
         <span className="text-ink text-base font-medium">Policy Categories Tested</span>
         <div className="flex flex-wrap gap-3">
           {policyCategories.map((c) => (
-            <span key={c} className="inline-flex items-center gap-1.5 rounded-full bg-[#dfe4e3] px-2.5 py-1 text-[11px] font-semibold uppercase text-slate">
+            <span key={c} className="inline-flex items-center gap-1.5 rounded-full bg-sage-tint px-2.5 py-1 text-[11px] font-semibold uppercase text-slate">
               <span className="h-1.5 w-1.5 rounded-full bg-slate/60" />
               {c}
             </span>
@@ -301,7 +319,7 @@ function DimensionChart() {
           return (
             <div key={d.label} className="flex items-center gap-4">
               <span className="text-ink text-sm font-medium w-[120px] shrink-0">{d.label}</span>
-              <div className="flex-1 h-5 rounded bg-[#dee3e8] overflow-hidden">
+              <div className="flex-1 h-5 rounded bg-then-tint overflow-hidden">
                 <div className={`h-full rounded ${bar}`} style={{ width: `${Math.max(4, d.pct)}%` }} />
               </div>
               <span className="text-slate text-sm font-semibold w-16 text-right shrink-0">{d.count}</span>
@@ -334,7 +352,7 @@ function Results() {
         <table className="min-w-[720px] w-full border-collapse">
           <thead>
             <tr className="border-b border-slate/15">
-              <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate w-[220px]">Model</th>
+              <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate">Model</th>
               {cols.map((c) => (
                 <th key={c.key} className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate">
                   {c.label}
@@ -391,7 +409,10 @@ function Accordion({ title, body }: { title: string; body: string }) {
     <div className="bg-slate/[0.06] rounded-lg overflow-hidden">
       <button onClick={() => setOpen((v) => !v)} className="flex items-center justify-between w-full px-4 py-3 text-left gap-3">
         <span className="text-ink text-[15px] font-medium">{title}</span>
-        <span className="text-rust text-2xl leading-none shrink-0">{open ? '−' : '+'}</span>
+        <svg className="text-rust shrink-0" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M2 8H14" stroke="currentColor" strokeWidth="1.5" />
+          {!open && <path d="M8 2V14" stroke="currentColor" strokeWidth="1.5" />}
+        </svg>
       </button>
       {open && <div className="px-4 pb-4 text-slate text-sm leading-relaxed whitespace-pre-line">{body}</div>}
     </div>
@@ -456,7 +477,7 @@ function CustomDropdown({
             >
               <span className="min-w-0">{o.label}</span>
               {o.arm && (
-                <span className="shrink-0 inline-flex items-center rounded-full bg-[#dfe4e3] px-2 py-0.5 text-[10px] font-semibold uppercase text-slate">
+                <span className="shrink-0 inline-flex items-center rounded-full bg-sage-tint px-2 py-0.5 text-[11px] font-semibold uppercase text-slate">
                   {o.arm}
                 </span>
               )}
@@ -604,10 +625,10 @@ function InAction() {
         <span className="text-ink text-base font-medium">Evaluation Score Matrix</span>
         <p className="text-slate text-[13px] leading-5">{cs.caption}</p>
         <div className="bg-white border border-slate/[0.12] rounded-lg overflow-x-auto">
-          <table className="min-w-[560px] w-full border-collapse">
+          <table className="min-w-[760px] w-full table-fixed border-collapse">
             <thead>
               <tr className="border-b border-slate/15">
-                <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate w-[220px]">Model</th>
+                <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate">Model</th>
                 <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate">Accountability</th>
                 <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate">Fairness</th>
                 <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase text-slate">Transparency</th>
@@ -616,7 +637,7 @@ function InAction() {
             <tbody>
               {cs.miniTable.map((row) => (
                 <tr key={row.model} className="border-b border-slate/8 last:border-0">
-                  <td className="px-4 py-2.5 text-sm font-medium text-ink whitespace-nowrap w-[220px]">{row.model}</td>
+                  <td className="px-4 py-2.5 text-sm font-medium text-ink">{row.model}</td>
                   <td className="px-4 py-2.5"><ScoreDot pct={row.accountability} label={verdictLabel(row.accountability)} /></td>
                   <td className="px-4 py-2.5"><ScoreDot pct={row.fairness} label={verdictLabel(row.fairness)} /></td>
                   <td className="px-4 py-2.5"><ScoreDot pct={row.transparency} label={verdictLabel(row.transparency)} /></td>
@@ -670,9 +691,9 @@ function Findings() {
 
 function NextSteps() {
   const badgeStyle = {
-    done: 'bg-[#dfe4e3] text-status-pass',
-    next: 'bg-[#e9e0da] text-rust',
-    then: 'bg-[#e3e5e8] text-slate',
+    done: 'bg-sage-tint text-status-pass',
+    next: 'bg-next-tint text-rust',
+    then: 'bg-then-tint text-slate',
   }
   return (
     <section id="next-steps" className="flex flex-col gap-6 scroll-mt-16">
@@ -697,12 +718,22 @@ function NextSteps() {
   )
 }
 
+function ExtArrow() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 16 16" className="inline-block w-[1.15em] h-[1.15em] ml-1.5 -mt-0.5 align-middle" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 12L12 4M5.5 4H12V10.5" />
+    </svg>
+  )
+}
+
 function DataCodeCTA() {
   return (
-    <div className="bg-ink rounded-lg p-8 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-center sm:text-left">
+    <div className="bg-ink rounded-lg p-8 flex flex-col items-center justify-center gap-4 text-center">
       <span className="text-white text-base font-medium">Explore the full dataset and evaluation harness:</span>
-      <a href={links.dataset} target="_blank" rel="noreferrer" className="text-rust hover:text-rust-deep text-[15px] font-medium transition-colors">Hugging Face Dataset ↗</a>
-      <a href={links.code} target="_blank" rel="noreferrer" className="text-rust hover:text-rust-deep text-[15px] font-medium transition-colors">GitHub Repository ↗</a>
+      <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
+        <a href={links.dataset} target="_blank" rel="noreferrer" className="text-rust hover:text-rust-deep text-[15px] font-medium transition-colors">Hugging Face Dataset<ExtArrow /></a>
+        <a href={links.code} target="_blank" rel="noreferrer" className="text-rust hover:text-rust-deep text-[15px] font-medium transition-colors">GitHub Repository<ExtArrow /></a>
+      </div>
     </div>
   )
 }
@@ -717,7 +748,7 @@ function Footer() {
 
 function PilotNote() {
   return (
-    <div className="bg-[#f2ece1] border border-rust/30 rounded-lg px-5 py-4 flex flex-col gap-1">
+    <div className="bg-sand border border-rust/30 rounded-lg px-5 py-4 flex flex-col gap-1">
       <span className="text-rust-deep text-[11px] font-semibold uppercase">Pilot, not a finished benchmark</span>
       <p className="text-slate text-[13px] leading-5">
         Results below are drawn from 8 items across 4 models — enough to establish that these failure modes are
@@ -733,7 +764,7 @@ export default function App() {
     <div className="bg-cloud min-h-screen flex flex-col overflow-x-clip">
       <NavBar />
       <Hero />
-      <main className="flex flex-col gap-12 px-4 sm:px-16 pt-12 pb-20 max-w-[1280px] mx-auto w-full">
+      <main className="flex flex-col gap-12 px-4 sm:px-16 pt-8 pb-20 max-w-[1280px] mx-auto w-full">
         <PilotNote />
         <Methodology />
         <Divider />
